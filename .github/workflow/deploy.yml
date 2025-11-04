@@ -1,0 +1,41 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Enables "Run workflow" button on Actions page
+  workflow_dispatch:
+  # Only deploy on pushed to main branch
+  push:
+    branches:
+      - main
+  
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  
+
+    steps:
+      - name: Checkout Repository
+        used: actions/checkout@v4
+      
+      - name: Setup Node.js  
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
